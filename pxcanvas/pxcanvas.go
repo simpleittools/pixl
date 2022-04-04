@@ -83,9 +83,9 @@ func (pxCanvas *PxCanvas) CreateRenderer() fyne.WidgetRenderer {
 	return renderer
 }
 
-func (PxCanvas *PxCanvas) TryPan(previousCoord *fyne.PointEvent, ev *desktop.MouseEvent) {
+func (pxCanvas *PxCanvas) TryPan(previousCoord *fyne.PointEvent, ev *desktop.MouseEvent) {
 	if previousCoord != nil && ev.Button == desktop.MouseButtonTertiary {
-		PxCanvas.Pan(*previousCoord, ev.PointEvent)
+		pxCanvas.Pan(*previousCoord, ev.PointEvent)
 	}
 }
 
@@ -115,4 +115,22 @@ func (pxCanvas *PxCanvas) MouseToCanvasXY(ev *desktop.MouseEvent) (*int, *int) {
 	y := int((ev.Position.Y - yOffset) / pxSize)
 
 	return &x, &y
+}
+
+func (pxCanvas *PxCanvas) LoadImage(img image.Image) {
+	dimensions := img.Bounds()
+	pxCanvas.PxCanvasConfig.PxCols = dimensions.Dx()
+	pxCanvas.PxCanvasConfig.PxRows = dimensions.Dy()
+
+	pxCanvas.PixelData = img
+	pxCanvas.reloadImage = true
+	pxCanvas.Refresh()
+}
+
+func (pxCanvas *PxCanvas) NewDrawing(cols, rows int) {
+	pxCanvas.appState.SetFilePath("")
+	pxCanvas.PxCols = cols
+	pxCanvas.PxRows = rows
+	pixelData := NewBlankImage(cols, rows, color.NRGBA{128, 128, 128, 255})
+	pxCanvas.LoadImage(pixelData)
 }
